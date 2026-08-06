@@ -1,6 +1,7 @@
 {
   "name": "battlesnake-ccs2430-resit",
   "version": "1.0.0",
+  "type": "module",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -15,7 +16,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/CholoDaBest/battlesnake-ccs2430-resit/issues"
   },
@@ -24,5 +24,8 @@
     "eslint": "^10.8.0",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.9.6"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
   }
 }
