@@ -26,16 +26,19 @@ app.post('/move', (req, res) => {
   const boardHeight = gameState.board.height;
   const myHead = gameState.you.head;
   const allSnakes = gameState.board.snakes;
+  const food = gameState.board.food;
 
   let possibleMoves = ['up', 'down', 'left', 'right'];
 
   possibleMoves = possibleMoves.filter((move) => {
     let nextX = myHead.x;
     let nextY = myHead.y;
+
     if (move === 'up') nextY += 1;
     if (move === 'down') nextY -= 1;
     if (move === 'left') nextX -= 1;
     if (move === 'right') nextX += 1;
+
     if (nextX < 0 || nextX >= boardWidth || nextY < 0 || nextY >= boardHeight) {
       return false;
     }
@@ -47,17 +50,51 @@ app.post('/move', (req, res) => {
         }
       }
     }
-
     return true;
   });
 
-  const safeMove =
-    possibleMoves.length > 0
-      ? possibleMoves[Math.floor(Math.random() * possibleMoves.length)]
-      : 'down';
+  let finalMove = 'down';
 
-  console.log(`MOVE: ${safeMove}`);
-  res.json({ move: safeMove });
+  if (possibleMoves.length > 0) {
+    if (food.length > 0) {
+      let closestFood = food[0];
+      let minDistance = Infinity;
+
+      for (const item of food) {
+        const distance = Math.abs(myHead.x - item.x) + Math.abs(myHead.y - item.y);
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestFood = item;
+        }
+      }
+
+      let bestMove = possibleMoves[0];
+      let bestMoveDistance = Infinity;
+
+      for (const move of possibleMoves) {
+        let nextX = myHead.x;
+        let nextY = myHead.y;
+
+        if (move === 'up') nextY += 1;
+        if (move === 'down') nextY -= 1;
+        if (move === 'left') nextX -= 1;
+        if (move === 'right') nextX += 1;
+
+        const distanceAfterMove = Math.abs(nextX - closestFood.x) + Math.abs(nextY - closestFood.y);
+
+        if (distanceAfterMove < bestMoveDistance) {
+          bestMoveDistance = distanceAfterMove;
+          bestMove = move;
+        }
+      }
+      finalMove = bestMove;
+    } else {
+      finalMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+    }
+  }
+
+  console.log(`MOVE: ${finalMove}`);
+  res.json({ move: finalMove });
 });
 
 app.post('/end', (req, res) => {
