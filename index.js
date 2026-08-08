@@ -25,6 +25,7 @@ app.post('/move', (req, res) => {
   const boardWidth = gameState.board.width;
   const boardHeight = gameState.board.height;
   const myHead = gameState.you.head;
+  const myLength = gameState.you.length;
   const allSnakes = gameState.board.snakes;
   const food = gameState.board.food;
 
@@ -46,6 +47,23 @@ app.post('/move', (req, res) => {
     for (const snake of allSnakes) {
       for (const bodyPart of snake.body) {
         if (nextX === bodyPart.x && nextY === bodyPart.y) {
+          return false;
+        }
+      }
+
+      if (snake.id !== gameState.you.id && snake.length >= myLength) {
+        const enemyHead = snake.head;
+        const enemyNextUp = { x: enemyHead.x, y: enemyHead.y + 1 };
+        const enemyNextDown = { x: enemyHead.x, y: enemyHead.y - 1 };
+        const enemyNextLeft = { x: enemyHead.x - 1, y: enemyHead.y };
+        const enemyNextRight = { x: enemyHead.x + 1, y: enemyHead.y };
+
+        if (
+          (nextX === enemyNextUp.x && nextY === enemyNextUp.y) ||
+          (nextX === enemyNextDown.x && nextY === enemyNextDown.y) ||
+          (nextX === enemyNextLeft.x && nextY === enemyNextLeft.y) ||
+          (nextX === enemyNextRight.x && nextY === enemyNextRight.y)
+        ) {
           return false;
         }
       }
@@ -91,6 +109,18 @@ app.post('/move', (req, res) => {
     } else {
       finalMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
     }
+  } else {
+    const fallbackMoves = ['up', 'down', 'left', 'right'].filter((move) => {
+      let nextX = myHead.x;
+      let nextY = myHead.y;
+      if (move === 'up') nextY += 1;
+      if (move === 'down') nextY -= 1;
+      if (move === 'left') nextX -= 1;
+      if (move === 'right') nextX += 1;
+      return nextX >= 0 && nextX < boardWidth && nextY >= 0 && nextY < boardHeight;
+    });
+
+    finalMove = fallbackMoves.length > 0 ? fallbackMoves[0] : 'down';
   }
 
   console.log(`MOVE: ${finalMove}`);
