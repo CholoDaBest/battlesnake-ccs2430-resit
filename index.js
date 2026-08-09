@@ -71,6 +71,55 @@ app.post('/move', (req, res) => {
     return true;
   });
 
+  // --- FLOOD-FILL ALGORITHM ---
+  const obstacles = new Set();
+  for (const snake of allSnakes) {
+    for (let i = 0; i < snake.body.length - 1; i++) {
+      obstacles.add(`${snake.body[i].x},${snake.body[i].y}`);
+    }
+  }
+
+  possibleMoves = possibleMoves.filter((move) => {
+    let nextX = myHead.x;
+    let nextY = myHead.y;
+
+    if (move === 'up') nextY += 1;
+    if (move === 'down') nextY -= 1;
+    if (move === 'left') nextX -= 1;
+    if (move === 'right') nextX += 1;
+    const visited = new Set();
+    const queue = [{ x: nextX, y: nextY }];
+    visited.add(`${nextX},${nextY}`);
+    let spaceCount = 0;
+
+    while (queue.length > 0) {
+      const current = queue.shift();
+      spaceCount++;
+      if (spaceCount >= myLength) {
+        return true;
+      }
+
+      const neighbors = [
+        { x: current.x, y: current.y + 1 }, // up
+        { x: current.x, y: current.y - 1 }, // down
+        { x: current.x - 1, y: current.y }, // left
+        { x: current.x + 1, y: current.y }, // right
+      ];
+
+      for (const n of neighbors) {
+        const key = `${n.x},${n.y}`;
+        if (n.x >= 0 && n.x < boardWidth && n.y >= 0 && n.y < boardHeight) {
+          if (!obstacles.has(key) && !visited.has(key)) {
+            visited.add(key);
+            queue.push(n);
+          }
+        }
+      }
+    }
+
+    return spaceCount >= myLength;
+  });
+
   let finalMove = 'down';
 
   if (possibleMoves.length > 0) {
