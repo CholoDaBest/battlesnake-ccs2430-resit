@@ -173,7 +173,12 @@ export function move(gameState) {
       return nextX >= 0 && nextX < boardWidth && nextY >= 0 && nextY < boardHeight;
     });
 
-    finalMove = fallbackMoves.length > 0 ? fallbackMoves[0] : 'down';
+    finalMove =
+      fallbackMoves.length > 0
+        ? fallbackMoves.id || fallbackMoves[0]
+        : myHead.y > 0
+          ? 'down'
+          : 'up';
   }
 
   return { move: finalMove };
