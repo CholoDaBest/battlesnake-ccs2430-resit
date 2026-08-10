@@ -6,7 +6,7 @@ const port = process.env.PORT || 8000;
 
 app.use(express.json());
 
-// --- 1. THE BRAIN (Core Logic) ---
+// --- 1. CORE LOGIC FUNCTIONS ---
 export function info() {
   return {
     apiversion: '1',
@@ -75,7 +75,7 @@ export function move(gameState) {
     return true;
   });
 
-  //FLOOD-FILL ALGORITHM
+  // --- FLOOD-FILL ALGORITHM ---
   const obstacles = new Set();
   for (const snake of allSnakes) {
     for (let i = 0; i < snake.body.length - 1; i++) {
@@ -124,7 +124,7 @@ export function move(gameState) {
     return spaceCount >= myLength;
   });
 
-  let finalMove = 'down';
+  let finalMove;
 
   if (possibleMoves.length > 0) {
     if (food.length > 0) {
@@ -179,6 +179,7 @@ export function move(gameState) {
   return { move: finalMove };
 }
 
+// --- 2. EXPRESS ROUTES ---
 app.get('/', (req, res) => {
   res.json(info());
 });
@@ -199,6 +200,7 @@ app.post('/end', (req, res) => {
   res.send('ok');
 });
 
+// --- 3. SERVER INITIALIZATION ---
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {
     console.log(`Battlesnake server running on port ${port}...`);
