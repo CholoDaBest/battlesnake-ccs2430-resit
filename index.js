@@ -1,3 +1,4 @@
+/* global process, console */
 import express from 'express';
 
 const app = express();
@@ -5,23 +6,26 @@ const port = process.env.PORT || 8000;
 
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.json({
+// --- 1. THE BRAIN (Core Logic) ---
+export function info() {
+  return {
     apiversion: '1',
     author: 'CholoDaBest',
     color: '#888888',
     head: 'default',
     tail: 'default',
-  });
-});
+  };
+}
 
-app.post('/start', (req, res) => {
+export function start(gameState) {
   console.log('GAME START');
-  res.send('ok');
-});
+}
 
-app.post('/move', (req, res) => {
-  const gameState = req.body;
+export function end(gameState) {
+  console.log('GAME OVER');
+}
+
+export function move(gameState) {
   const boardWidth = gameState.board.width;
   const boardHeight = gameState.board.height;
   const myHead = gameState.you.head;
@@ -71,7 +75,7 @@ app.post('/move', (req, res) => {
     return true;
   });
 
-  // --- FLOOD-FILL ALGORITHM ---
+  //FLOOD-FILL ALGORITHM
   const obstacles = new Set();
   for (const snake of allSnakes) {
     for (let i = 0; i < snake.body.length - 1; i++) {
@@ -100,10 +104,10 @@ app.post('/move', (req, res) => {
       }
 
       const neighbors = [
-        { x: current.x, y: current.y + 1 }, // up
-        { x: current.x, y: current.y - 1 }, // down
-        { x: current.x - 1, y: current.y }, // left
-        { x: current.x + 1, y: current.y }, // right
+        { x: current.x, y: current.y + 1 },
+        { x: current.x, y: current.y - 1 },
+        { x: current.x - 1, y: current.y },
+        { x: current.x + 1, y: current.y },
       ];
 
       for (const n of neighbors) {
@@ -172,15 +176,31 @@ app.post('/move', (req, res) => {
     finalMove = fallbackMoves.length > 0 ? fallbackMoves[0] : 'down';
   }
 
-  console.log(`MOVE: ${finalMove}`);
-  res.json({ move: finalMove });
+  return { move: finalMove };
+}
+
+app.get('/', (req, res) => {
+  res.json(info());
 });
 
-app.post('/end', (req, res) => {
-  console.log('GAME OVER');
+app.post('/start', (req, res) => {
+  start(req.body);
   res.send('ok');
 });
 
-app.listen(port, () => {
-  console.log(`Battlesnake server running on port ${port}...`);
+app.post('/move', (req, res) => {
+  const response = move(req.body);
+  console.log(`MOVE: ${response.move}`);
+  res.json(response);
 });
+
+app.post('/end', (req, res) => {
+  end(req.body);
+  res.send('ok');
+});
+
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(port, () => {
+    console.log(`Battlesnake server running on port ${port}...`);
+  });
+}
