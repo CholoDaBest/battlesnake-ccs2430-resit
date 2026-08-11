@@ -75,7 +75,10 @@ export function move(gameState) {
     return true;
   });
 
-  // --- FLOOD-FILL ALGORITHM ---
+  const safeMoves = [...possibleMoves];
+  const moveSpaces = {};
+
+  //FLOOD-FILL ALGORITHM
   const obstacles = new Set();
   for (const snake of allSnakes) {
     for (let i = 0; i < snake.body.length - 1; i++) {
@@ -120,7 +123,7 @@ export function move(gameState) {
         }
       }
     }
-
+    moveSpaces[move] = spaceCount;
     return spaceCount >= myLength;
   });
 
@@ -162,18 +165,19 @@ export function move(gameState) {
     } else {
       finalMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
     }
-  } else {
-    const fallbackMoves = ['up', 'down', 'left', 'right'].filter((move) => {
-      let nextX = myHead.x;
-      let nextY = myHead.y;
-      if (move === 'up') nextY += 1;
-      if (move === 'down') nextY -= 1;
-      if (move === 'left') nextX -= 1;
-      if (move === 'right') nextX += 1;
-      return nextX >= 0 && nextX < boardWidth && nextY >= 0 && nextY < boardHeight;
-    });
+  } else if (safeMoves.length > 0) {
+    let bestSafeMove = safeMoves[0];
+    let maxSpace = -1;
 
-    finalMove = fallbackMoves.length > 0 ? fallbackMoves[0] : myHead.y > 0 ? 'down' : 'up';
+    for (const move of safeMoves) {
+      if (moveSpaces[move] > maxSpace) {
+        maxSpace = moveSpaces[move];
+        bestSafeMove = move;
+      }
+    }
+    finalMove = bestSafeMove;
+  } else {
+    finalMove = 'down';
   }
 
   return { move: finalMove };
@@ -200,7 +204,6 @@ app.post('/end', (req, res) => {
   res.send('ok');
 });
 
-// --- 3. SERVER INITIALIZATION ---
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {
     console.log(`Battlesnake server running on port ${port}...`);
