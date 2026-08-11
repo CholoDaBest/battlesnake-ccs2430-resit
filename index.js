@@ -17,11 +17,11 @@ export function info() {
   };
 }
 
-export function start(gameState) {
+export function start() {
   console.log('GAME START');
 }
 
-export function end(gameState) {
+export function end() {
   console.log('GAME OVER');
 }
 
@@ -173,12 +173,7 @@ export function move(gameState) {
       return nextX >= 0 && nextX < boardWidth && nextY >= 0 && nextY < boardHeight;
     });
 
-    finalMove =
-      fallbackMoves.length > 0
-        ? fallbackMoves.id || fallbackMoves[0]
-        : myHead.y > 0
-          ? 'down'
-          : 'up';
+    finalMove = fallbackMoves.length > 0 ? fallbackMoves[0] : myHead.y > 0 ? 'down' : 'up';
   }
 
   return { move: finalMove };
