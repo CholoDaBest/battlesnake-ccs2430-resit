@@ -66,19 +66,25 @@ describe('Battlesnake API Core Functions', () => {
 
   // Helper function to build a fake game board
   function createFakeGame(myHead, myBody, food, otherSnakes) {
+    const youSnake = {
+      id: 'cholo-snake',
+      name: 'CholoDaBest',
+      head: myHead,
+      body: myBody,
+      length: myBody.length,
+    };
+
+    // A real Battlesnake board always includes your own snake in the snakes array!
+    const allSnakes = otherSnakes ? [...otherSnakes, youSnake] : [youSnake];
+
     return {
       board: {
         height: 11,
         width: 11,
         food: food || [],
-        snakes: otherSnakes || [],
+        snakes: allSnakes,
       },
-      you: {
-        id: 'cholo-snake',
-        head: myHead,
-        body: myBody,
-        length: myBody.length,
-      },
+      you: youSnake,
     };
   }
 
