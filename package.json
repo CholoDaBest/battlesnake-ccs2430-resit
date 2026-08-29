@@ -1,0 +1,33 @@
+{
+  "name": "battlesnake-ccs2430-resit",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+    "lint": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CholoDaBest/battlesnake-ccs2430-resit.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CholoDaBest/battlesnake-ccs2430-resit/issues"
+  },
+  "homepage": "https://github.com/CholoDaBest/battlesnake-ccs2430-resit#readme",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.8.0",
+    "eslint-config-prettier": "^10.1.8",
+    "jest": "^30.4.2",
+    "prettier": "^3.9.6"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
